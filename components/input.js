@@ -7,108 +7,84 @@ import DoneIcon  from '@mui/icons-material/Done'
 const Input = (props) => {
 
     //useState HOOKS
-    const [classname, setClassName] = useState(['focus:outline-none', 'border-2'])
-    const [stringClassName, setStringClassName] = useState()
-    const [error_generated, setErrorGenerated] = useState(false)
-    const [validation, setValidation] = useState()
-    const [id, setId] = useState(Math.random()*9999)
+    const [defaultTailwindClass, setDefaultTailwindClass] = useState()
 
     const [errorMessage, setErrorMessage] = useState()
-    const [success, setSuccess] = useState(false)
+    const [error, setError]               = useState(false)
+    const [success, setSuccess]           = useState(false)
 
-    const [errorBorder, setErrorBorder] = useState()
-    const [errorBorderCss, setErrorBorderCss] = useState()
+    const [validation, setValidation]   = useState()
+    const [styleEngine, setStyleEngine] = useState()
+
+    const [errorColorCss, setErrorColorCss]           = useState('#EF4444')
+    const [errorColorTailwind, setErrorColorTailwind] = useState('red-500')
+
+    const [successColorCss, setSuccessColorCss]           = useState('#10B981')
+    const [successColorTailwind, setSuccessColorTailwind] = useState('green-500')
+    
+    const [errorBorderCss, setErrorBorderCss]           = useState()
     const [errorBorderTailwind, setErrorBorderTailwind] = useState()
 
-    const [errorMessageCss, setErrorMessageCss] = useState()
-    const [errorMessageTailwind, setErrorMessageTailwin] = useState()
+    const [errorMessageCss, setErrorMessageCss]           = useState()
+    const [errorMessageTailwind, setErrorMessageTailwind] = useState()
 
-    const [successBorder, setSuccessBorder] = useState()
-    const [successBorderCss, setSuccessBorderCss] = useState()
+    const [successBorderCss, setSuccessBorderCss]           = useState()
     const [successBorderTailwind, setSuccessBorderTailwind] = useState()
+
+    const [successMessageCss, setSuccessMessageCss]           = useState()
+    const [successMessageTailwind, setSuccessMessageTailwind] = useState()
 
     //useEffect HOOKS
     useEffect(() => {
-        if(props.className) setClassName([...classname, props.className])
+        if(props.className) setDefaultTailwindClass(props.className + ' focus:outline-none')
         if(props.validation) setValidation(props.validation)
+        if(props.settings){
+            props.settings.errorColorCss           ? setErrorColorCss(props.settings.errorColorCss)                     : setErrorColorCss('#EF4444')
+            props.settings.errorColorTailwind      ? setErrorColorTailwind(props.settings.errorColorTailwind)           : setErrorColorTailwind('red-500')
+            props.settings.successColorCss         ? setSuccessColorCss(props.settings.successColorCss)                 : setSuccessColorCss('#10B981')
+            props.settings.successColorTailwind    ? setSuccessColorTailwind(props.settings.successColorTailwind)       : setSuccessColorTailwind('green-500')
+            props.settings.withTailwindcss         ? setStyleEngine('tailwind')                                         : setStyleEngine('css')
+            props.settings.errorBorderCss          ? setErrorBorderCss(props.settings.errorBorderCss)                   : setErrorBorderCss(`border: 2px ${errorColorCss}`)
+            props.settings.errorBorderTailwind     ? setErrorBorderTailwind(props.settings.errorBorderTailwind)         : setErrorBorderTailwind(`border-2 border-${errorColorTailwind}`)
+            props.settings.errorMessageCss         ? setErrorMessageCss(props.settings.errorMessageCss)                 : setErrorMessageCss(`position: absolute; right: 0; margin-right: -0.5rem; --transform-translate-x: 100%; --transform-translate-y: -50%; color: ${errorColorCss}; font-size: 0.875rem;line-height: 1.25rem;`)
+            props.settings.errorMessageTailwind    ? setErrorMessageTailwind(props.settings.errorMessageTailwind)       : setErrorMessageTailwind(`text-sm absolute top-2/4 -translate-y-2/4 right-0 translate-x-full -mr-2 text-${errorColorTailwind}`)
+            props.settings.successBorderCss        ? setSuccessBorderCss(props.settings.successBorderCss)               : setSuccessBorderCss(`border: 2px ${successColorCss}`)
+            props.settings.successBorderTailwind   ? setSuccessBorderTailwind(props.settings.successBorderTailwind)     : setSuccessBorderTailwind(`border-2 border-${successColorTailwind}`)
+            props.settings.successMessageCss       ? setSuccessMessageCss(props.settings.successMessageCss)             : setSuccessMessageCss(`position: absolute; right: 0; margin-right: -0.5rem; --transform-translate-x: 100%; --transform-translate-y: -50%; color: ${successColorCss}; font-size: 0.875rem;line-height: 1.25rem;`)
+            props.settings.successMessageTailwind  ? setSuccessMessageTailwind(props.settings.successMessageTailwind)   : setSuccessMessageTailwind(`text-sm absolute top-2/4 -translate-y-2/4 right-0 translate-x-full -mr-2 text-${successColorTailwind}`)
+        }
     }, [])
 
-    useEffect(() => {
-        setStringClassName(array_to_string(classname))
-    }, [classname])
-
     //functions
-    const remove_elt_from_array = (array, elt) => {
-        const index = array.indexOf(elt)
-        if (index > -1) array.splice(index, 1)
-        return array
-    }
-
-    const array_to_string = (array) => {
-        if(typeof array === 'object'){
-            let str = ''
-            array.forEach(elt => {
-                str = str + ' ' + elt
-            })
-            return str
-        }
-    }
-
-    const generate_error = (e, error_mesage) => {
-
-        //check if error is already generated
-        if(error_generated) return 0
-
-        //check if tailwind is active
-        if(props.settings){
-            const settings = props.settings
-            if(settings.withTailwindcss){
-                setClassName([
-                    ...classname, 
-                    settings.errorBorderTailwind ? settings.errorBorderTailwind : 'border-red-500',
-                ])
-                setErrorGenerated(true)
-            }
-            else{
-                //case of no tailwind (classic html/css style)
-                const style = {
-                    border: settings.errorBorderCss ? settings.errorBorderCss : '2px #EF4444'
-                }
-                e.target.setAttribute('style', style)
-                setErrorGenerated(true)
-            }
-        }
-    }
-
-    const generate_success = (e) => {
-
-    }
-
     const check_value = (e) => {
         const value = e.target.value
+
         if(validation){
-            
+
             //check if verification is real time
             if(validation.realTime){
 
                 //minLength verification
                 if(validation.minLength !== 'undefined'){
-                    console.log(typeof validation.minLength)
+
                     const minLength = typeof validation.minLength === 'object' ? validation.minLength[0] : validation.minLength
                     const test = validator.isLength(value, {min: minLength})
+
                     //generate error message
-                    if(typeof validation.minLength === 'object' && validation.minLength.length >= 2) setErrorMessage(validation.minLength[1])
-                    else{
-                        setErrorMessage(`Minimum characters is ${minLength}`)
+                    if(!test){
+                        setError(true)
+                        if(typeof validation.minLength === 'object' && validation.minLength.length >= 2) setErrorMessage(validation.minLength[1])
+                        else setErrorMessage(`Minimum characters is ${minLength}`)
+                        return 0
                     }
-                    if(!test) return generate_error(e)
 
                     //case of no error
-                    setClassName(remove_elt_from_array(classname, 'border-red-500'))
-                    setStringClassName(array_to_string(remove_elt_from_array(classname, 'border-red-500')))
-                    setErrorGenerated(false)
                     setErrorMessage(false)
+                    setSuccess(true)
+                    setError(false)
                 }
+
+
             }
         }
     }
@@ -117,11 +93,20 @@ const Input = (props) => {
     return (
         <div className='relative h-fit w-fit'>
             <input
-                className={stringClassName}
+                className={`
+                    ${defaultTailwindClass} 
+                    ${error   && styleEngine === 'tailwind' && errorBorderTailwind} 
+                    ${success && styleEngine === 'tailwind' && successBorderTailwind}
+                `}
                 onChange={e => check_value(e)}
             />
-            {success && <h3 className='text-sm absolute top-2/4 -translate-y-2/4 right-0 translate-x-full -mr-3 text-green-500'><DoneIcon /></h3>}
-            {errorMessage && <h3 className='text-sm absolute top-2/4 -translate-y-2/4 right-0 translate-x-full -mr-3 text-red-500'><ErrorIcon /> {errorMessage}</h3>}
+
+            {success && styleEngine === 'tailwind' && <h3 className={successMessageTailwind}><DoneIcon /></h3>}
+            {success && styleEngine === 'css'      && <h3 style={successMessageCss}><DoneIcon /></h3>}
+
+
+            {errorMessage && styleEngine === 'tailwind' && <h3 className={errorMessageTailwind}><ErrorIcon /> {errorMessage}</h3>}
+            {errorMessage && styleEngine === 'css'      && <h3 style={errorMessageCss}><ErrorIcon /> {errorMessage}</h3>}
         </div>
     )
 }
