@@ -2,10 +2,11 @@
 *  I M P O R T S  *
 *******************/
 import {useState, useEffect} from 'react'
-import validator from 'validator'
-import ErrorIcon from '@mui/icons-material/Error'
-import DoneIcon  from '@mui/icons-material/Done'
-import { v4 as uuidv4 } from 'uuid'
+import validator             from 'validator'
+import ErrorIcon             from '@mui/icons-material/Error'
+import DoneIcon              from '@mui/icons-material/Done'
+import { v4 as uuidv4 }      from 'uuid'
+import 'animate.css'
 
 const Input = (props) => {
 
@@ -32,6 +33,12 @@ const Input = (props) => {
 
     const [errorColorCss, setErrorColorCss]           = useState('#EF4444')
     const [errorColorTailwind, setErrorColorTailwind] = useState('red-500')
+
+    const [errorColorTailwindBorder, setErrorColorTailwindBorder] = useState('border-red-500')
+    const [errorColorTailwindText, setErrorColorTailwindText]     = useState('text-red-500')
+
+    const [successColorTailwindBorder, setSuccessColorTailwindBorder] = useState('border-green-500')
+    const [successColorTailwindText, setSuccessColorTailwindText]     = useState('text-green-500')
 
     const [successColorCss, setSuccessColorCss]           = useState('#10B981')
     const [successColorTailwind, setSuccessColorTailwind] = useState('green-500')
@@ -75,30 +82,48 @@ const Input = (props) => {
         if(props.className) setDefaultTailwindClass(props.className + ' focus:outline-none')
         if(props.validation) setValidation(props.validation)
         if(props.settings){
+            if(props.settings.errorColorTailwind){
+                setErrorColorTailwindBorder('border-' + errorColorTailwind)
+                setErrorColorTailwindText('text-' + errorColorTailwind)
+            }
+            if(props.settings.successColorTailwind){
+                setSuccessColorTailwindBorder('border-' + successColorTailwind)
+                setSuccessColorTailwindText('text-' + successColorTailwind)
+            }
             props.settings.errorColorCss           ? setErrorColorCss(props.settings.errorColorCss)                     : setErrorColorCss('#EF4444')
             props.settings.errorColorTailwind      ? setErrorColorTailwind(props.settings.errorColorTailwind)           : setErrorColorTailwind('red-500')
             props.settings.successColorCss         ? setSuccessColorCss(props.settings.successColorCss)                 : setSuccessColorCss('#10B981')
             props.settings.successColorTailwind    ? setSuccessColorTailwind(props.settings.successColorTailwind)       : setSuccessColorTailwind('green-500')
             props.settings.withTailwindcss         ? setStyleEngine('tailwind')                                         : setStyleEngine('css')
-            props.settings.errorBorderCss          ? setErrorBorderCss(props.settings.errorBorderCss)                   : setErrorBorderCss(`border: 2px ${errorColorCss}`)
-            props.settings.errorBorderTailwind     ? setErrorBorderTailwind(props.settings.errorBorderTailwind)         : setErrorBorderTailwind(`border-2 border-${errorColorTailwind}`)
+            props.settings.errorBorderCss          ? setErrorBorderCss(props.settings.errorBorderCss)                   : setErrorBorderCss('border: 2px ' + errorColorCss)
+            props.settings.errorBorderTailwind     ? setErrorBorderTailwind(props.settings.errorBorderTailwind)         : setErrorBorderTailwind(`border-2 ${errorColorTailwindBorder}`)
             props.settings.errorMessageCss         ? setErrorMessageCss(props.settings.errorMessageCss)                 : setErrorMessageCss(`position: absolute; right: 0; margin-right: -0.5rem; --transform-translate-x: 100%; --transform-translate-y: -50%; color: ${errorColorCss}; font-size: 0.875rem;line-height: 1.25rem;`)
-            props.settings.errorMessageTailwind    ? setErrorMessageTailwind(props.settings.errorMessageTailwind)       : setErrorMessageTailwind(`text-sm absolute top-2/4 -translate-y-2/4 right-0 translate-x-full -mr-2 text-${errorColorTailwind}`)
+            props.settings.errorMessageTailwind    ? setErrorMessageTailwind(props.settings.errorMessageTailwind)       : setErrorMessageTailwind('text-sm absolute top-2/4 -translate-y-2/4 right-0 translate-x-full -mr-2 ' + errorColorTailwindText)
             props.settings.successBorderCss        ? setSuccessBorderCss(props.settings.successBorderCss)               : setSuccessBorderCss(`border: 2px ${successColorCss}`)
-            props.settings.successBorderTailwind   ? setSuccessBorderTailwind(props.settings.successBorderTailwind)     : setSuccessBorderTailwind(`border-2 border-${successColorTailwind}`)
+            props.settings.successBorderTailwind   ? setSuccessBorderTailwind(props.settings.successBorderTailwind)     : setSuccessBorderTailwind('border-2 ' + successColorTailwindBorder)
             props.settings.successMessageCss       ? setSuccessMessageCss(props.settings.successMessageCss)             : setSuccessMessageCss(`position: absolute; right: 0; margin-right: -0.5rem; --transform-translate-x: 100%; --transform-translate-y: -50%; color: ${successColorCss}; font-size: 0.875rem;line-height: 1.25rem;`)
-            props.settings.successMessageTailwind  ? setSuccessMessageTailwind(props.settings.successMessageTailwind)   : setSuccessMessageTailwind(`text-sm absolute top-2/4 -translate-y-2/4 right-0 translate-x-full -mr-2 text-${successColorTailwind}`)
+            props.settings.successMessageTailwind  ? setSuccessMessageTailwind(props.settings.successMessageTailwind)   : setSuccessMessageTailwind(`text-sm absolute top-2/4 -translate-y-2/4 right-0 translate-x-full -mr-2 ${successColorTailwindText}`)
         }
     }, [])
 
     //check for erros when submit
     useEffect(() => {
         if(typeof props.submit !== 'undefined' && typeof props.errors !=='undefined'){
+
             //check for erros when submit
             props.errors.forEach(elt => {
                 if(elt.id === random_id || elt.id === required_id){
                     setError(true)
                     setErrorMessage(elt.errorMessage)
+
+                    //check for shaking when submit and error
+                    if(props.validation.shakeOnError){
+                        const old_defaultTailwindClass = defaultTailwindClass
+                        setDefaultTailwindClass(defaultTailwindClass + ' animate__animated animate__shakeX')
+                        setTimeout(() => {
+                            setDefaultTailwindClass(old_defaultTailwindClass)
+                        }, 1000)
+                    }
                 }
             }) 
         }
@@ -170,6 +195,7 @@ const Input = (props) => {
     const generate_error = (err_msg) => {
         setError(true)
         setErrorMessage(err_msg)
+        setSuccess(false)
     }
 
     //check if the field is required + generate error if required and empty
@@ -207,12 +233,12 @@ const Input = (props) => {
 
         //case of test passed
         if(is_error(random_id)) remove_error(random_id)
-        is_pass()
+        is_pass(value)
         return true
     }
 
     //check if all tests passed
-    const is_pass = () => {
+    const is_pass = (value) => {
         if(!props.errors || !props.setErrors || !props.setValue) return 0
         let found = false
         props.errors.forEach(err => {
@@ -225,6 +251,7 @@ const Input = (props) => {
         setError(false)
         setErrorMessage(false)
         props.setValue(value)
+        console.log(value)
     }
 
     /**************************

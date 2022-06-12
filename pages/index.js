@@ -11,23 +11,15 @@ export default function Home() {
 	}
 
 	//useState HOOKS
-	const [errors, setErrors] = useState([])
 	const [value, setValue] = useState()
-	const [submit, setSubmit] = useState(false)
-
-	//useEffect HOOKS
-	useEffect(() => {
-		console.log(errors)
-	}, [errors])
 
 	//functions
-	const validateForm = (e) => {
-		e.preventDefault()
-		setSubmit(!submit)
-		if(errors.length > 0) return 0
-
-		alert('congratulations: ' + value)
+	const x = () => {
+		alert('hello ' + value)
 	}
+
+	//useFormValidator HOOK
+	const [errors, setErrors, submit, validateForm] = useFormValidator(x)
 
 	//main render
 	return (
@@ -37,14 +29,15 @@ export default function Home() {
 				<h6 className='text-gray-700 font-medium'>Your first name</h6>
 				<Input 
 					className='py-2 px-3 mb-4 mt-2 rounded-lg mr-4 shadow-sm bg-gray-50 border border-gray-300 text-sm w-full block' 
-					settings={custom_settings}
 					validation={{
-						required:[true, 'This field is required'],
+						required:[true, 'This field is required 000000000000'],
 						minLength: [5, 'min characters is 5'],
 						maxLength: 10,
 						realTime: true,
-						async: true
+						async: true,
+						shakeOnError: true
 					}}
+					settings={custom_settings}
 					setErrors={setErrors}
 					errors={errors}
 					setValue={setValue}
