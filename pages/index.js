@@ -12,22 +12,31 @@ export default function Home() {
 
 	//useState HOOKS
 	const [errors, setErrors] = useState([])
-
-	//useState HOOKS
 	const [value, setValue] = useState()
+	const [submit, setSubmit] = useState(false)
+
+	//useEffect HOOKS
+	useEffect(() => {
+		console.log(errors)
+	}, [errors])
 
 	//functions
 	const validateForm = (e) => {
 		e.preventDefault()
-		console.log(1)
+		setSubmit(!submit)
+		if(errors.length > 0) return 0
+
+		alert('congratulations: ' + value)
 	}
 
 	//main render
 	return (
 		<div>
-			<form onSubmit={validateForm}>
+			<form onSubmit={validateForm} className='py-4 px-4'>
+
+				<h6 className='text-gray-700 font-medium'>Your first name</h6>
 				<Input 
-					className='rounded-md shadow-md bg-gray-100 m-5 py-3 px-4' 
+					className='py-2 px-3 mb-4 mt-2 rounded-lg mr-4 shadow-sm bg-gray-50 border border-gray-300 text-sm w-full block' 
 					settings={custom_settings}
 					validation={{
 						required:[true, 'This field is required'],
@@ -37,9 +46,11 @@ export default function Home() {
 						async: true
 					}}
 					setErrors={setErrors}
-					value={value}
+					errors={errors}
+					setValue={setValue}
+					submit={submit}
 				/>
-				<button type='submit'>ok</button>
+				<button type='submit' className='mt-2 text-gray-100 font-medium px-8 hover:scale-105 transition-all rounded-lg shadow-sm py-2 bg-blue-500'>Submit</button>
 			</form>
 		</div>
 	)
